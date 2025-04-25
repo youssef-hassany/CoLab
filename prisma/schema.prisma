@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "generated/prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id              String               @id @default(uuid())
+  name            String
+  email           String               @unique
+  passwordHash    String
+  createdAt       DateTime             @default(now())
+  profilePic      String?
+
+  // Relations
+  teams           TeamMember[] 
+  environments    EnvironmentMember[] 
+  createdEnvs     Environment[]        @relation("CreatedEnvironments")
+  assignedTasks   Task[]               @relation("AssignedTasks")
+  createdTasks    Task[]               @relation("CreatedTasks")
+  comments        Comment[]
+  attachments     Attachment[]
+  notifications   Notification[]
+
+}
+
+model Team {
+  id        String        @id @default(uuid())
+  name      String
+  createdAt DateTime      @default(now())
+
+  // Relations
+  members   TeamMember[]
+  environments Environment[]
+}
+
+model TeamMember {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  team      Team     @relation(fields: [teamId], references: [id])
+  teamId    String
+  role      String   // "admin" or "member"
+}
+
+model Environment {
+  id          String              @id @default(uuid())
+  name        String
+  createdAt   DateTime            @default(now())
+  team        Team                @relation(fields: [teamId], references: [id])
+  teamId      String
+  createdBy   User                @relation("CreatedEnvironments", fields: [createdById], references: [id])
+  createdById String
+
+  // Relations
+  members     EnvironmentMember[]
+  sections    Section[]
+}
+
+model EnvironmentMember {
+  id            String     @id @default(uuid())
+  user          User       @relation(fields: [userId], references: [id])
+  userId        String
+  environment   Environment @relation(fields: [environmentId], references: [id])
+  environmentId String
+  role          String     
+  joinedAt      DateTime   @default(now())
+}
+
+model Section {
+  id             String     @id @default(uuid())
+  name           String
+  order          Int?
+  environment    Environment @relation(fields: [environmentId], references: [id])
+  environmentId  String
+
+  // Relations
+  tasks          Task[]
+}
+
+model Task {
+  id             String     @id @default(uuid())
+  title          String
+  description    String
+  importance     String     // e.g. "Low", "Medium", "High"
+  deadline       DateTime
+  createdAt      DateTime   @default(now())
+
+  section        Section    @relation(fields: [sectionId], references: [id])
+  sectionId      String
+
+  assignedTo     User       @relation("AssignedTasks", fields: [assignedToId], references: [id])
+  assignedToId   String
+
+  createdBy      User       @relation("CreatedTasks", fields: [createdById], references: [id])
+  createdById    String
+
+  comments       Comment[]
+  attachments    Attachment[]
+  notifications  Notification[]
+
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  task      Task     @relation(fields: [taskId], references: [id])
+  taskId    String
+
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+}
+
+model Attachment {
+  id        String   @id @default(uuid())
+  url       String   // File URL (e.g. S3 bucket link)
+  filename  String
+  createdAt DateTime @default(now())
+
+  task      Task     @relation(fields: [taskId], references: [id])
+  taskId    String
+
+  uploadedBy User    @relation(fields: [uploadedById], references: [id])
+  uploadedById String
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+
+  task      Task?    @relation(fields: [taskId], references: [id])
+  taskId    String?
+}
