@@ -30,7 +30,7 @@ export async function signup(prevState: any, formData: FormData) {
   try {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
-    const username = formData.get("name") as string; // Matches form's `name` field
+    const username = formData.get("name") as string;
 
     // Check if user already exists
     const existingUser = await prisma.user.findFirst({
@@ -57,33 +57,27 @@ export async function signup(prevState: any, formData: FormData) {
         passwordHash: hashedPassword,
       },
     });
-    // Generate JWT
+
+    // Generate JWT and set cookie
     const token = await generateJWT({
       userId: newUser.id,
       email: newUser.email,
       username: newUser.name,
     });
 
-    // Store JWT in cookies
     (await cookies()).set("colab-token", token, {
       httpOnly: true,
       secure: true,
       maxAge: 60 * 60 * 24 * 30,
       path: "/",
     });
-
-    const userData: UserWithoutPassword = {
-      id: newUser.id,
-      email: newUser.email,
-      name: newUser.name,
-      createdAt: newUser.createdAt,
-    };
-
-    return { success: true, user: userData };
   } catch (error) {
     console.error("Signup error:", error);
     return { error: "Failed to create account" };
   }
+
+  // Redirect AFTER successful execution (outside try/catch)
+  redirect("/home");
 }
 
 /* ---------------- LOGIN ---------------- */
@@ -91,39 +85,34 @@ export async function login(prevState: any, formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
+  let user;
   try {
-    const user = await prisma.user.findUnique({
-      where: { email: email },
-    });
-
-    if (!user) {
-      return { error: "Invalid email or password" };
-    }
+    // 1. Validate user credentials
+    user = await prisma.user.findUnique({ where: { email } });
+    if (!user) return { error: "Invalid email or password" };
 
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
-
-    if (!isPasswordValid) {
-      return { error: "Invalid email or password" };
-    }
-
-    const token = await generateJWT({
-      userId: user.id,
-      email: user.email,
-      username: user.name,
-    });
-
-    (await cookies()).set("colab-token", token, {
-      httpOnly: true,
-      secure: true,
-      maxAge: 60 * 60 * 24 * 30,
-      path: "/",
-    });
-
-    return { success: true, message: "User logged in successfully" };
+    if (!isPasswordValid) return { error: "Invalid email or password" };
   } catch (error) {
     console.error("Login error:", error);
     return { error: "Failed to login" };
   }
+
+  // 2. Generate token and set cookie (OUTSIDE try/catch)
+  const token = await generateJWT({
+    userId: user.id,
+    email: user.email,
+    username: user.name,
+  });
+
+  (await cookies()).set("colab-token", token, {
+    httpOnly: true,
+    secure: true,
+    maxAge: 60 * 60 * 24 * 30,
+    path: "/",
+  });
+
+  redirect("/home");
 }
 
 /* ---------------- LOGOUT ---------------- */

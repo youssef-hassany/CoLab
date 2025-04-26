@@ -1,5 +1,5 @@
 import { AuthFormsContainer } from "@/components/auth/AuthFormContainer";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Chrome, Github } from "lucide-react";
 
 export default function Home() {
   return (
@@ -33,10 +33,12 @@ export default function Home() {
               </div>
 
               <div className="mt-6 grid grid-cols-2 gap-3">
-                <button className="w-full inline-flex justify-center py-2 px-4 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-sm font-medium text-gray-300 hover:bg-gray-600">
+                <button className="w-full inline-flex justify-center items-center gap-2 py-2 px-4 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-sm font-medium text-gray-300 hover:bg-gray-600 cursor-pointer">
+                  <Chrome />
                   Google
                 </button>
-                <button className="w-full inline-flex justify-center py-2 px-4 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-sm font-medium text-gray-300 hover:bg-gray-600">
+                <button className="w-full inline-flex justify-center items-center gap-2 py-2 px-4 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-sm font-medium text-gray-300 hover:bg-gray-600 cursor-pointer">
+                  <Github />
                   GitHub
                 </button>
               </div>
@@ -69,10 +71,9 @@ export default function Home() {
               </li>
             </ul>
             <div className="text-lg font-medium">
-              "CoLab has transformed how our team works together. We've seen a
-              40% increase in productivity!"
+              Your team's next breakthrough starts here
               <div className="mt-2 text-emerald-300">
-                — Sarah Chen, Product Manager
+                Start Collaborating Today
               </div>
             </div>
           </div>
