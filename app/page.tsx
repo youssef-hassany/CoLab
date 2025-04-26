@@ -1,4 +1,5 @@
 import { AuthFormsContainer } from "@/components/auth/AuthFormContainer";
+import GithubAuthButton from "@/components/auth/GithubAuthButton";
 import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
 import { CheckCircle, Chrome, Github } from "lucide-react";
 
@@ -35,10 +36,7 @@ export default function Home() {
 
               <div className="mt-6 grid grid-cols-2 gap-3">
                 <GoogleAuthButton />
-                <button className="w-full inline-flex justify-center items-center gap-2 py-2 px-4 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-sm font-medium text-gray-300 hover:bg-gray-600 cursor-pointer">
-                  <Github />
-                  GitHub
-                </button>
+                <GithubAuthButton />
               </div>
             </div>
           </div>
