@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
-import { generateJWT } from "@/lib/session";
+import { generateJWT, getUserFromToken } from "@/lib/session";
 import { prisma } from "@/lib/db";
 
 /* ---------------- INTERFACES ---------------- */
@@ -119,4 +119,42 @@ export async function login(prevState: any, formData: FormData) {
 export async function logout() {
   (await cookies()).delete("colab-token");
   redirect("/");
+}
+
+/* ---------------- GET LOGGED IN USER ---------------- */
+export async function getLoggedInUser() {
+  const token = (await cookies()).get("colab-token")?.value;
+
+  if (!token) {
+    return { error: "Missing Token" };
+  }
+
+  try {
+    // Verify and extract user data from token
+    const user = await getUserFromToken(token);
+
+    // Fetch user from database using the ID from token
+    const userData = await prisma.user.findUnique({
+      where: { id: user.userId },
+    });
+
+    if (!userData) {
+      return { error: "User not found" };
+    }
+
+    return { user: userData };
+  } catch (error) {
+    console.error("Authentication error:", error);
+
+    // More specific error messages based on the error type
+    if (error instanceof Error) {
+      if (error.message === "Token expired") {
+        return { error: "Session expired, please log in again" };
+      } else if (error.message.includes("Invalid token")) {
+        return { error: "Invalid authentication token" };
+      }
+    }
+
+    return { error: "Authentication failed" };
+  }
 }

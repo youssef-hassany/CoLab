@@ -1,17 +1,9 @@
 "use client";
 
-import { logout } from "@/app/actions/user-actions";
-import { cookies } from "next/headers";
-
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gray-900">
-      <button
-        className="m-4 p-4 rounded bg-emerald-500 cursor-pointer"
-        onClick={logout}
-      >
-        Logout
-      </button>
+    <main className="w-full min-h-screen bg-zinc-900 py-16 md:py-4 px-4 text-white">
+      Hello
     </main>
   );
 }

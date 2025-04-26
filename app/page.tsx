@@ -9,7 +9,7 @@ export default function Home() {
       <div className="flex flex-col md:flex-row min-h-screen">
         {/* Left Section - Login Form */}
         {/* Left Section - Auth Form */}
-        <div className="w-full md:w-1/2 flex items-center justify-center bg-gray-800 p-8">
+        <div className="w-full h-screen md:w-1/2 flex items-center justify-center bg-gray-800 p-8">
           <div className="w-full max-w-md">
             <div className="text-center mb-10">
               <h1 className="text-4xl font-bold text-emerald-400">CoLab</h1>
@@ -43,7 +43,7 @@ export default function Home() {
         </div>
 
         {/* Right Section - Marketing Content */}
-        <div className="w-full md:w-1/2 bg-gradient-to-br from-emerald-800 to-gray-900 text-white flex items-center justify-center p-8">
+        <div className="hidden w-full md:w-1/2 bg-gradient-to-br from-emerald-800 to-gray-900 text-white md:flex items-center justify-center p-8">
           <div className="max-w-md">
             <h2 className="text-5xl font-bold mb-6">
               Collaboration Reimagined
