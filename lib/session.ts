@@ -4,6 +4,7 @@ export async function generateJWT(payload: {
   userId: string;
   email: string;
   username: string;
+  profilePicture?: string | null;
 }) {
   // Make sure to set a JWT_SECRET in your .env file
   const JWT_SECRET = process.env.JWT_SECRET;
