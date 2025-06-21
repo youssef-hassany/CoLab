@@ -90,7 +90,7 @@ export function CreateTeamDialog({
       formData.append("teamLogo", croppedImage || "");
 
       // If members is an array, serialize it as JSON or append each item separately:
-      formData.append("members", JSON.stringify([])); // or use data.members if dynamic
+      // formData.append("members", JSON.stringify([]));
 
       await createTeam(formData);
 

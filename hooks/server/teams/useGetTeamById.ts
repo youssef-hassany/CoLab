@@ -12,7 +12,7 @@ export const useGetTeamById = (id: string) => {
 
       const data = await response.json();
 
-      return data.data.user as TeamDetails[];
+      return data.data.teams as TeamDetails[];
     },
   });
 };
