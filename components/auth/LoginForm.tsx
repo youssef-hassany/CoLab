@@ -1,29 +1,58 @@
 "use client";
 
-import { login } from "@/app/actions/user-actions";
-import { useActionState } from "react";
-import SubmitButton from "../common/SubmitButton";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema, type LoginSchema } from "@/schemas/loginSchema";
+import { useLogin } from "@/hooks/server/auth/useLogin";
+import Spinner from "../common/Spinner";
 
 export function LoginForm() {
-  const [state, formAction] = useActionState(login, null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setError,
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const { mutateAsync: loginUser, isPending } = useLogin();
+
+  const onSubmit = async (data: LoginSchema) => {
+    try {
+      const formData = new FormData();
+      formData.append("identifier", data.identifier);
+      formData.append("password", data.password);
+
+      await loginUser(formData);
+    } catch (error) {
+      setError("root", {
+        type: "manual",
+        message: error instanceof Error ? error.message : "Login failed",
+      });
+    }
+  };
 
   return (
-    <form action={formAction} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div>
         <label
-          htmlFor="email"
+          htmlFor="identifier"
           className="block text-sm font-medium text-gray-300"
         >
-          Email
+          Email or Username
         </label>
         <input
-          type="email"
-          id="email"
-          name="email"
+          id="identifier"
           className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-white focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
           placeholder="you@example.com"
-          required
+          {...register("identifier")}
         />
+        {errors.identifier && (
+          <p className="mt-1 text-red-400 text-sm">
+            {errors.identifier.message}
+          </p>
+        )}
       </div>
 
       <div>
@@ -36,17 +65,29 @@ export function LoginForm() {
         <input
           type="password"
           id="password"
-          name="password"
           className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-white focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
           placeholder="••••••••"
-          required
+          {...register("password")}
         />
+        {errors.password && (
+          <p className="mt-1 text-red-400 text-sm">{errors.password.message}</p>
+        )}
       </div>
 
-      {state?.error && <p className="text-red-400 text-sm">{state.error}</p>}
+      {errors.root && (
+        <p className="text-red-400 text-sm">{errors.root.message}</p>
+      )}
 
       <div>
-        <SubmitButton>Sign in</SubmitButton>
+        <button
+          disabled={isPending}
+          type="submit"
+          className={`w-full flex justify-center gap-3 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-gray-900 bg-emerald-400 hover:bg-emerald-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 focus:ring-offset-gray-800 ${
+            isPending && "opacity-70"
+          }`}
+        >
+          Log in {isPending && <Spinner />}
+        </button>
       </div>
     </form>
   );

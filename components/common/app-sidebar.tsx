@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Calendar,
   Home,
@@ -25,8 +27,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getLoggedInUser, logout } from "@/app/actions/user-actions";
 import Link from "next/link";
+import { useGetLoggedInUser } from "@/hooks/server/user/useGetLoggedInUser";
+import { useLogout } from "@/hooks/server/auth/useLogout";
 
 const items = [
   {
@@ -56,8 +59,9 @@ const items = [
   },
 ];
 
-export async function AppSidebar() {
-  const user = await getLoggedInUser();
+export function AppSidebar() {
+  const { data: user } = useGetLoggedInUser();
+  const { mutateAsync: logout } = useLogout();
 
   return (
     <Sidebar>
@@ -89,14 +93,14 @@ export async function AppSidebar() {
               <button className="flex items-center w-full gap-3 rounded-md p-2 hover:bg-zinc-800 transition">
                 <Avatar>
                   <AvatarImage
-                    src={user.user?.profilePic || "/placeholder-avatar.png"}
+                    src={user?.photo || "/placeholder-avatar.png"}
                     alt="User"
                   />
                   <AvatarFallback className="bg-emerald-600">JD</AvatarFallback>
                 </Avatar>
                 <div className="text-left flex-1">
-                  <p className="text-sm font-medium">{user.user?.name}</p>
-                  <p className="text-xs text-zinc-400">{user.user?.email}</p>
+                  <p className="text-sm font-medium">{user?.username}</p>
+                  <p className="text-xs text-zinc-400">{user?.email}</p>
                 </div>
               </button>
             </DropdownMenuTrigger>
@@ -114,7 +118,7 @@ export async function AppSidebar() {
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-zinc-700" />
               <DropdownMenuItem
-                onClick={logout}
+                onClick={async () => await logout()}
                 className="cursor-pointer text-red-500"
               >
                 <LogOut className="mr-2 h-4 w-4" />
