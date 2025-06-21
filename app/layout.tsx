@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/common/providers";
 import { AuthLayout } from "@/components/common/AuthGuard";
+import "react-image-crop/dist/ReactCrop.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

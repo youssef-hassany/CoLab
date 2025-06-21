@@ -22,8 +22,8 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
-import ImageCropper from "../common/ImageCropper";
 import { useCreateTeam } from "@/hooks/server/teams/useCreateTeam";
+import ImageCropper from "../common/ImageCropper";
 
 // Zod schema for form validation
 const createTeamSchema = z.object({
@@ -46,7 +46,7 @@ export function CreateTeamDialog({
   onOpenChange,
 }: CreateTeamDialogProps) {
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
-  const [croppedImageBlob, setCroppedImageBlob] = useState<Blob | null>(null);
+  const [croppedImageFile, setCroppedImageFile] = useState<File | null>(null);
 
   const { mutateAsync: createTeam, isPending: isSubmitting } = useCreateTeam();
 
@@ -64,21 +64,22 @@ export function CreateTeamDialog({
     },
   });
 
-  const handleCropSubmit = (blob: Blob, cropData: any) => {
-    // Store the blob for later use
-    setCroppedImageBlob(blob);
+  // This function will be called when the ImageCropper completes cropping
+  const handleCropSubmit = (file: File) => {
+    // Store the file for form submission
+    setCroppedImageFile(file);
 
-    // Convert blob to data URL for display
+    // Convert file to data URL for display
     const reader = new FileReader();
     reader.onload = (e) => {
       setCroppedImage(e.target?.result as string);
     };
-    reader.readAsDataURL(blob);
+    reader.readAsDataURL(file);
   };
 
   const handleRemoveImage = () => {
     setCroppedImage(null);
-    setCroppedImageBlob(null);
+    setCroppedImageFile(null);
   };
 
   const onSubmit = async (data: CreateTeamFormData) => {
@@ -87,10 +88,11 @@ export function CreateTeamDialog({
 
       formData.append("teamName", data.teamName);
       formData.append("theme", data.theme);
-      formData.append("teamLogo", croppedImage || "");
 
-      // If members is an array, serialize it as JSON or append each item separately:
-      // formData.append("members", JSON.stringify([]));
+      // Append the actual file, not the data URL
+      if (croppedImageFile) {
+        formData.append("teamLogo", croppedImageFile);
+      }
 
       await createTeam(formData);
 
@@ -106,7 +108,7 @@ export function CreateTeamDialog({
       // Reset form when dialog closes
       reset();
       setCroppedImage(null);
-      setCroppedImageBlob(null);
+      setCroppedImageFile(null);
     }
   };
 
@@ -155,7 +157,10 @@ export function CreateTeamDialog({
                   </button>
                 </div>
               ) : (
-                <ImageCropper onSubmit={handleCropSubmit} />
+                <ImageCropper
+                  submitFunction={handleCropSubmit}
+                  imgStyle="w-32 h-32 object-cover rounded-lg border border-zinc-300"
+                />
               )}
             </div>
 
