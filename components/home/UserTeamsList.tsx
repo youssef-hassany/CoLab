@@ -24,7 +24,7 @@ const UserTeamsList = () => {
     );
   }
 
-  if (!userTeams || userTeams.length === 0) {
+  if (userTeams?.length === 0) {
     return (
       <>
         <div className="flex flex-col items-center justify-center py-16 px-4">
