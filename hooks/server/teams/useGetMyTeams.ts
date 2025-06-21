@@ -12,7 +12,7 @@ export const useGetMyTeams = () => {
 
       const data = await response.json();
 
-      return data.data.user as Team[];
+      return data.data.teams as Team[];
     },
   });
 };

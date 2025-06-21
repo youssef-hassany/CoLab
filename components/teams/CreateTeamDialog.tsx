@@ -83,16 +83,16 @@ export function CreateTeamDialog({
 
   const onSubmit = async (data: CreateTeamFormData) => {
     try {
-      const payload = {
-        teamData: {
-          teamName: data.teamName,
-          teamLogo: croppedImage || "",
-          theme: data.theme,
-        },
-        members: [],
-      };
+      const formData = new FormData();
 
-      await createTeam(payload);
+      formData.append("teamName", data.teamName);
+      formData.append("theme", data.theme);
+      formData.append("teamLogo", croppedImage || "");
+
+      // If members is an array, serialize it as JSON or append each item separately:
+      formData.append("members", JSON.stringify([])); // or use data.members if dynamic
+
+      await createTeam(formData);
 
       handleDialogClose(false);
     } catch (error) {
