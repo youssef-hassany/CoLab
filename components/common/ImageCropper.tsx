@@ -9,7 +9,7 @@ import ReactCrop, {
 } from "react-image-crop";
 import setCanvasPreview from "@/lib/setCanvasPreview";
 import { Button } from "@/components/ui/button";
-import { X, Check } from "lucide-react";
+import { X, Check, Divide, Upload } from "lucide-react";
 
 const DEFAULT_ASPECT_RATIO = 1;
 const DEFAULT_MIN_DIMENSION = 150;
@@ -207,19 +207,27 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
   return (
     <>
       <div className="relative group">
-        <img
-          ref={imgClickRef}
-          onClick={() => fileUploadRef.current?.click()}
-          className={`cursor-pointer transition-all duration-300 rounded-xl hover:scale-105 hover:shadow-lg ${imgStyle}`}
-          src={
-            imgState
-              ? imgState instanceof File
+        {imgState ? (
+          <img
+            ref={imgClickRef}
+            onClick={() => fileUploadRef.current?.click()}
+            className={`cursor-pointer transition-all duration-300 rounded-xl hover:scale-105 hover:shadow-lg ${imgStyle}`}
+            src={
+              imgState instanceof File
                 ? URL.createObjectURL(imgState)
                 : imgState
-              : defaultImgSrc
-          }
-          alt="Edit Brand Image"
-        />
+            }
+            alt="Edit Brand Image"
+          />
+        ) : (
+          <div
+            onClick={() => fileUploadRef.current?.click()}
+            className="w-32 h-32 border-2 border-dashed flex items-center justify-center flex-col gap-3 rounded-2xl cursor-pointer duration-200 hover:-translate-y-1"
+          >
+            <Upload />
+            <p className="text-[12px] font-medium">Upload Image</p>
+          </div>
+        )}
       </div>
 
       {imgSizeError && (
@@ -284,7 +292,10 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
             </div>
 
             {crop && (
-              <div className="mt-6 flex flex-col items-center">
+              <div
+                className="mt-6 flex flex-col items-center"
+                style={{ display: "none" }}
+              >
                 <p className="text-white/70 text-sm mb-3">Preview:</p>
                 <canvas
                   ref={previewCanvasRef}

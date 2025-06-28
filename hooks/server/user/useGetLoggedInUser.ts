@@ -22,6 +22,5 @@ export const useGetLoggedInUser = () => {
 
       return data.data.user as User;
     },
-    retry: false,
   });
 };

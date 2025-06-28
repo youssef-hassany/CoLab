@@ -2,16 +2,15 @@
 
 import { useGetMyTeams } from "@/hooks/server/teams/useGetMyTeams";
 import { CheckCircle, UserPlus, Users } from "lucide-react";
-import React, { useState } from "react";
 import { Skeleton } from "../ui/skeleton";
 import { Button } from "../ui/button";
-import { CreateTeamDialog } from "../teams/CreateTeamDialog";
-import { JoinTeamDialog } from "../teams/JoinTeamDialog";
+import Link from "next/link";
+import { parseDateString } from "@/utils/date";
+import { useTeamModalStore } from "@/store/teamModalsStore";
 
 const UserTeamsList = () => {
   const { data: userTeams, isPending } = useGetMyTeams();
-  const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const { toggleCreateModal, toggleJoinModal } = useTeamModalStore();
 
   if (isPending) {
     return (
@@ -39,27 +38,12 @@ const UserTeamsList = () => {
             be invited to get started with collaborative work.
           </p>
           <div className="flex gap-3">
-            <Button onClick={() => setIsCreateDialogOpen(true)}>
-              Create Team
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => setIsJoinDialogOpen(true)}
-            >
+            <Button onClick={toggleCreateModal}>Create Team</Button>
+            <Button variant="secondary" onClick={toggleJoinModal}>
               Join Team
             </Button>
           </div>
         </div>
-
-        <CreateTeamDialog
-          open={isCreateDialogOpen}
-          onOpenChange={setIsCreateDialogOpen}
-        />
-
-        <JoinTeamDialog
-          open={isJoinDialogOpen}
-          onOpenChange={setIsJoinDialogOpen}
-        />
       </>
     );
   }
@@ -67,7 +51,8 @@ const UserTeamsList = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {userTeams?.map((team) => (
-        <div
+        <Link
+          href={`/teams/${team.id}`}
           key={team.id}
           className="bg-zinc-800 hover:bg-zinc-750 rounded-xl p-6 border border-zinc-700 hover:border-emerald-500/50 transition-all cursor-pointer group"
         >
@@ -92,10 +77,10 @@ const UserTeamsList = () => {
             </span>
             <span className="flex items-center gap-1">
               <CheckCircle className="w-4 h-4" />
-              {team.createdAt.toString()}
+              {parseDateString(team.createdAt.toString()).formatted.short}
             </span>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );

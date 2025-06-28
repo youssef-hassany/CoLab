@@ -11,6 +11,7 @@ export interface Team {
 }
 
 export interface TeamDetails {
+  id: string;
   teamName: string;
   teamLogo: string;
   theme: string;
