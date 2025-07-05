@@ -14,3 +14,9 @@ export interface StatusConfig {
   color: string;
   count: number;
 }
+
+export interface TaskCategory {
+  id: string;
+  categoryName: string;
+  categoryColor: string;
+}

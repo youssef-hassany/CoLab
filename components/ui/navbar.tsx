@@ -149,7 +149,12 @@ export function TopNavbar({
                   Settings
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    await logout();
+                  }}
+                >
                   {isPending ? "Logging Out..." : "Log Out"}
                 </DropdownMenuItem>
               </DropdownMenuContent>

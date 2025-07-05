@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,6 +12,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useJoinTeam } from "@/hooks/server/teams/useJoinTeam";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 interface JoinTeamDialogProps {
   open: boolean;
@@ -17,11 +22,27 @@ interface JoinTeamDialogProps {
 }
 
 export function JoinTeamDialog({ open, onOpenChange }: JoinTeamDialogProps) {
-  const handleSubmit = (e: React.FormEvent) => {
+  const [code, setCode] = useState("");
+  const router = useRouter();
+
+  const {
+    mutateAsync: joinTeam,
+    isPending: isLoading,
+    isSuccess,
+  } = useJoinTeam();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log("Joining team...");
-    onOpenChange(false); // Close dialog after submission
+
+    try {
+      const teamId = await joinTeam(code);
+      router.push(`/teams/${teamId}`);
+
+      onOpenChange(false);
+      setCode("");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -42,6 +63,8 @@ export function JoinTeamDialog({ open, onOpenChange }: JoinTeamDialogProps) {
                 name="teamCode"
                 placeholder="Enter team invitation code"
                 required
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
               />
             </div>
           </div>
@@ -49,7 +72,9 @@ export function JoinTeamDialog({ open, onOpenChange }: JoinTeamDialogProps) {
             <DialogClose asChild>
               <Button variant="secondary">Cancel</Button>
             </DialogClose>
-            <Button type="submit">Join Team</Button>
+            <Button type="submit">
+              {isLoading ? "Joining Team..." : "Join Team"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

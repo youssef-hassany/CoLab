@@ -88,20 +88,22 @@ const TeamPage: React.FC = () => {
   }
 
   return (
-    <main className="w-full min-h-screen bg-zinc-800 text-white flex">
+    <main className="w-full min-h-screen bg-zinc-800 text-white flex flex-col lg:flex-row">
       {/* Sidebar */}
       <TeamSidebar tasks={tasks} statusConfig={statusConfig} />
 
       {/* Main Content - Kanban Board */}
-      <div className="flex-1 p-6">
+      <div className="flex-1 p-4 lg:p-6 w-full pt-16 lg:pt-6">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-white mb-2">Project Board</h2>
-          <p className="text-zinc-400">
+          <h2 className="text-xl lg:text-2xl font-bold text-white mb-2">
+            Project Board
+          </h2>
+          <p className="text-zinc-400 text-sm lg:text-base">
             Drag and drop tasks to update their status
           </p>
         </div>
 
-        <div className="flex gap-6">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
           {Object.entries(statusConfig).map(([status, config]) => (
             <KanbanColumn
               key={status}

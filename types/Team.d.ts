@@ -15,6 +15,7 @@ export interface TeamDetails {
   teamName: string;
   teamLogo: string;
   theme: string;
+  joinCode: string;
   teamMembers: TeamMember[];
 }
 
