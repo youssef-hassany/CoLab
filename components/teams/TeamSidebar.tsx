@@ -13,11 +13,14 @@ import {
   ChevronUp,
   Menu,
   X,
+  Plus,
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import { TaskCategoriesSection } from "../task-categories";
 import { TeamActionButtons } from "./TeamActionButtons";
+import { CreateTaskModal } from "./CreateTaskModal";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   tasks: Task[];
@@ -30,6 +33,7 @@ const TeamSidebar = ({ tasks, statusConfig }: Props) => {
   const { data: taskCategories } = useGetTaskCategories(teamId as string);
   const [showMembers, setShowMembers] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // Check if current user is the team owner
   const isOwner = team?.teamMembers?.some(
@@ -76,6 +80,17 @@ const TeamSidebar = ({ tasks, statusConfig }: Props) => {
                 <Calendar className="w-4 h-4" />
                 <span className="text-sm">Theme: {team.theme}</span>
               </div>
+            </div>
+
+            {/* Create Task Button */}
+            <div className="mt-4">
+              <Button
+                onClick={() => setIsCreateModalOpen(true)}
+                className={`w-full bg-${team.theme}-600 hover:bg-${team.theme}-700 text-white`}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create Task
+              </Button>
             </div>
           </div>
 
@@ -223,6 +238,13 @@ const TeamSidebar = ({ tasks, statusConfig }: Props) => {
           </div>
         )}
       </div>
+
+      {/* Create Task Modal */}
+      <CreateTaskModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        teamId={teamId as string}
+      />
     </>
   );
 };

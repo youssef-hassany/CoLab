@@ -1,4 +1,4 @@
-import { Task } from "@/types/Task";
+import { Task, TaskPriority } from "@/types/Task";
 import { GripVertical } from "lucide-react";
 import React from "react";
 
@@ -8,10 +8,16 @@ interface TaskCardProps {
 }
 
 const TaskCard: React.FC<TaskCardProps> = ({ task, onDragStart }) => {
-  const priorityColors: Record<Task["priority"], string> = {
-    high: "border-l-red-500",
-    medium: "border-l-yellow-500",
-    low: "border-l-green-500",
+  const priorityColors: Record<TaskPriority, string> = {
+    HIGH: "border-l-red-500",
+    MEDIUM: "border-l-yellow-500",
+    LOW: "border-l-green-500",
+  };
+
+  const priorityLabels: Record<TaskPriority, string> = {
+    HIGH: "High",
+    MEDIUM: "Medium",
+    LOW: "Low",
   };
 
   return (
@@ -31,14 +37,14 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onDragStart }) => {
         <span className="text-xs text-zinc-400">{task.assignee}</span>
         <span
           className={`px-2 py-1 rounded text-xs ${
-            task.priority === "high"
+            task.priority === "HIGH"
               ? "bg-red-900 text-red-200"
-              : task.priority === "medium"
+              : task.priority === "MEDIUM"
               ? "bg-yellow-900 text-yellow-200"
               : "bg-green-900 text-green-200"
           }`}
         >
-          {task.priority}
+          {priorityLabels[task.priority]}
         </span>
       </div>
     </div>

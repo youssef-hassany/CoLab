@@ -24,6 +24,7 @@ import { z } from "zod";
 import { useState } from "react";
 import { useCreateTeam } from "@/hooks/server/teams/useCreateTeam";
 import ImageCropper from "../common/ImageCropper";
+import { MemberSearch } from "./MemberSearch";
 
 // Zod schema for form validation
 const createTeamSchema = z.object({
@@ -47,6 +48,14 @@ export function CreateTeamDialog({
 }: CreateTeamDialogProps) {
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
   const [croppedImageFile, setCroppedImageFile] = useState<File | null>(null);
+  const [selectedMembers, setSelectedMembers] = useState<
+    Array<{
+      id: string;
+      username: string;
+      email: string;
+      photo: string;
+    }>
+  >([]);
 
   const { mutateAsync: createTeam, isPending: isSubmitting } = useCreateTeam();
 
@@ -82,6 +91,21 @@ export function CreateTeamDialog({
     setCroppedImageFile(null);
   };
 
+  const handleMemberSelect = (member: {
+    id: string;
+    username: string;
+    email: string;
+    photo: string;
+  }) => {
+    setSelectedMembers((prev) => [...prev, member]);
+  };
+
+  const handleMemberRemove = (memberId: string) => {
+    setSelectedMembers((prev) =>
+      prev.filter((member) => member.id !== memberId)
+    );
+  };
+
   const onSubmit = async (data: CreateTeamFormData) => {
     try {
       const formData = new FormData();
@@ -92,6 +116,12 @@ export function CreateTeamDialog({
       // Append the actual file, not the data URL
       if (croppedImageFile) {
         formData.append("teamLogo", croppedImageFile);
+      }
+
+      // Append selected members
+      if (selectedMembers.length > 0) {
+        const memberIds = selectedMembers.map((member) => member.id);
+        formData.append("members", JSON.stringify(memberIds));
       }
 
       await createTeam(formData);
@@ -109,6 +139,7 @@ export function CreateTeamDialog({
       reset();
       setCroppedImage(null);
       setCroppedImageFile(null);
+      setSelectedMembers([]);
     }
   };
 
@@ -214,6 +245,15 @@ export function CreateTeamDialog({
               {errors.theme && (
                 <p className="text-sm text-red-500">{errors.theme.message}</p>
               )}
+            </div>
+
+            {/* Member Search Section */}
+            <div className="grid gap-3">
+              <MemberSearch
+                selectedMembers={selectedMembers}
+                onMemberSelect={handleMemberSelect}
+                onMemberRemove={handleMemberRemove}
+              />
             </div>
           </div>
 

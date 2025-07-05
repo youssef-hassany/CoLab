@@ -1,22 +1,25 @@
+export type TaskStatus = "ISSUED" | "IN_PROGRESS" | "IN_REVIEW" | "DONE";
+
+export type TaskPriority = "HIGH" | "MEDIUM" | "LOW";
+
 export interface Task {
   id: string;
   title: string;
   description: string;
   assignee: string;
-  priority: "high" | "medium" | "low";
-  status: "issued" | "in-progress" | "in-review" | "done";
+  priority: TaskPriority;
+  status: TaskStatus;
 }
-
-export type TaskStatus = "issued" | "in-progress" | "in-review" | "done";
 
 export interface StatusConfig {
   title: string;
   color: string;
-  count: number;
+  count?: number;
 }
 
-export interface TaskCategory {
-  id: string;
-  categoryName: string;
-  categoryColor: string;
+interface TasksByStatus {
+  ISSUED: Task[];
+  IN_PROGRESS: Task[];
+  IN_REVIEW: Task[];
+  DONE: Task[];
 }
