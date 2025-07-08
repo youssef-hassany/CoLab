@@ -1,0 +1,38 @@
+version: "3"
+
+volumes:
+  node_modules:
+services:
+  backend:
+    build:
+      context: ../COLAB-BACKEND
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8000:8000"
+
+    environment:
+      - PORT=8000
+      - NODE_ENV=dev
+  redis:
+    image: redis:7.2-alpine
+    ports:
+      - "6379:6379"
+  frontend:
+    build:
+      context: .
+      dockerfile: dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    # depends_on:
+    #   - postgres
+  # postgres:
+  #   image: postgres:16.2
+  #   environment:
+  #     POSTGRES_USER: night
+  #     POSTGRES_PASSWORD: bomb
+  #     POSTGRES_DB: colab
+  #   ports:
+  #     - "6000:5432"
