@@ -2,8 +2,12 @@ import { baseUrl } from "@/constants/baseUrl";
 import { Task } from "@/types/Task";
 import { useQuery } from "@tanstack/react-query";
 
-const getTasks = async (teamId: string) => {
-  const response = await fetch(`${baseUrl}/api/teams/${teamId}/tasks`, {
+const getTasks = async (teamId: string, taskCategoryId?: string) => {
+  let url = `${baseUrl}/api/teams/${teamId}/tasks`;
+  if (taskCategoryId) {
+    url += `?taskCategoryId=${encodeURIComponent(taskCategoryId)}`;
+  }
+  const response = await fetch(url, {
     credentials: "include",
   });
 
@@ -55,10 +59,10 @@ const getTasks = async (teamId: string) => {
   }
 };
 
-export const useGetTasks = (teamId: string) => {
+export const useGetTasks = (teamId: string, taskCategoryId?: string) => {
   return useQuery({
-    queryKey: ["tasks", teamId],
-    queryFn: () => getTasks(teamId),
+    queryKey: ["tasks", teamId, taskCategoryId],
+    queryFn: () => getTasks(teamId, taskCategoryId),
     enabled: !!teamId,
     initialData: [] as Task[],
   });

@@ -23,6 +23,8 @@ const createTask = async ({
   taskStatus,
   taskPriority,
   attachedFile,
+  taskCategoryId,
+  assignedToId,
 }: Task) => {
   // Create FormData
   const formData = new FormData();
@@ -32,6 +34,8 @@ const createTask = async ({
   formData.append("taskDeadline", taskDeadline);
   formData.append("taskStatus", taskStatus?.toUpperCase() || "ISSUED");
   formData.append("taskPriority", taskPriority?.toUpperCase() || "MEDIUM");
+  formData.append("taskCategoryId", taskCategoryId || "");
+  formData.append("assignedToId", assignedToId || "");
 
   // Add file if provided
   if (attachedFile instanceof File) {

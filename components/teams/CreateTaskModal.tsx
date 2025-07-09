@@ -23,6 +23,7 @@ import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { Upload, X } from "lucide-react";
 import { useGetTeamById } from "@/hooks/server/teams/useGetTeamById";
+import { useGetTaskCategories } from "@/hooks/server/task-categories/useGetTaskCategories";
 
 interface CreateTaskModalProps {
   isOpen: boolean;
@@ -38,6 +39,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   defaultStatus = "ISSUED",
 }) => {
   const { data: team } = useGetTeamById(teamId);
+  const { data: taskCategories } = useGetTaskCategories(teamId);
 
   const createTaskMutation = useCreateTask();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -47,6 +49,8 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
     taskDeadline: "",
     taskPriority: "MEDIUM" as TaskPriority,
     taskStatus: defaultStatus,
+    taskCategory: taskCategories?.[0]?.id || "",
+    assignToUser: "",
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -71,6 +75,10 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
       formDataToSend.append("taskDeadline", formData.taskDeadline);
       formDataToSend.append("taskStatus", formData.taskStatus);
       formDataToSend.append("taskPriority", formData.taskPriority);
+      formDataToSend.append("taskCategory", formData.taskCategory);
+      formDataToSend.append("assignedToId", formData.assignToUser);
+
+      console.log(formData);
 
       // Add file if selected
       if (selectedFile) {
@@ -84,6 +92,8 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
         taskDeadline: formData.taskDeadline,
         taskStatus: formData.taskStatus,
         taskPriority: formData.taskPriority,
+        taskCategoryId: formData.taskCategory,
+        assignedToId: formData.assignToUser,
       };
 
       if (selectedFile) {
@@ -100,6 +110,8 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
         taskDeadline: "",
         taskPriority: "MEDIUM",
         taskStatus: defaultStatus,
+        taskCategory: taskCategories?.[0]?.id || "",
+        assignToUser: "",
       });
       setSelectedFile(null);
     } catch (error) {
@@ -123,7 +135,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-zinc-900 border-zinc-700">
+      <DialogContent className="sm:max-w-[425px] bg-zinc-900 border-zinc-700 overflow-y-scroll max-h-[90vh]">
         <DialogHeader>
           <DialogTitle className="text-white">Create New Task</DialogTitle>
         </DialogHeader>
@@ -174,6 +186,31 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             />
           </div>
 
+          {taskCategories && (
+            <div className="space-y-2">
+              <Label htmlFor="taskCategory" className="text-zinc-300">
+                Task Category
+              </Label>
+              <Select
+                value={formData.taskCategory || ""}
+                onValueChange={(value: string) =>
+                  setFormData({ ...formData, taskCategory: value })
+                }
+              >
+                <SelectTrigger className="bg-zinc-800 border-zinc-600 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-zinc-800 border-zinc-600">
+                  {taskCategories?.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.categoryName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           <div className="space-y-2">
             <Label htmlFor="taskPriority" className="text-zinc-300">
               Priority
@@ -213,6 +250,29 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                 <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
                 <SelectItem value="IN_REVIEW">In Review</SelectItem>
                 <SelectItem value="DONE">Done</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="assignToUser" className="text-zinc-300">
+              Assign To
+            </Label>
+            <Select
+              value={formData.assignToUser || ""}
+              onValueChange={(value: string) =>
+                setFormData({ ...formData, assignToUser: value })
+              }
+            >
+              <SelectTrigger className="bg-zinc-800 border-zinc-600 text-white">
+                Assign To
+              </SelectTrigger>
+              <SelectContent className="bg-zinc-800 border-zinc-600">
+                {team?.teamMembers.map((member) => (
+                  <SelectItem key={member.id} value={member.id}>
+                    {member.username}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

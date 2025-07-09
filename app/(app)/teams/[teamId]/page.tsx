@@ -24,19 +24,8 @@ const TeamPage: React.FC = () => {
   const { data: team, isPending: isTeamPending } = useGetTeamById(
     teamId as string
   );
-  const { data: tasks = [], isPending: isTasksPending } = useGetTasks(
-    teamId as string
-  );
+
   const changeStatusMutation = useChangeTaskStatus();
-
-  // Ensure tasks is always an array
-  const safeTasks = Array.isArray(tasks) ? tasks : [];
-
-  // Optimistic state for drag and drop
-  const [optimisticTasks, setOptimisticTasks] = useState<Task[] | null>(null);
-
-  // Use optimistic tasks if available, otherwise use real tasks
-  const currentTasks = optimisticTasks || safeTasks;
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
@@ -54,44 +43,27 @@ const TeamPage: React.FC = () => {
       return;
     }
 
-    const oldStatus = taskData.status;
-    const updatedTask = { ...taskData, status: newStatus };
-
-    // Optimistic update
-    setOptimisticTasks(
-      safeTasks.map((task) => (task.id === taskData.id ? updatedTask : task))
-    );
-
     try {
-      // Call the external server to update the status
+      // Call the external server to update the status (optimistic handled in hook)
       await changeStatusMutation.mutateAsync({
         taskId: taskData.id,
         teamId: teamId as string,
         status: newStatus,
       });
-
-      // Clear optimistic state on success
-      setOptimisticTasks(null);
     } catch (error) {
-      // Revert optimistic update on error
-      setOptimisticTasks(
-        safeTasks.map((task) =>
-          task.id === taskData.id ? { ...task, status: oldStatus } : task
-        )
-      );
-
+      // Show error toast if mutation fails
       toast.error("Failed to update task status. Please try again.");
     }
   };
 
-  if (isTeamPending || isTasksPending) {
+  if (isTeamPending) {
     return <TeamPageSkeleton />;
   }
 
   return (
     <main className="w-full min-h-screen bg-zinc-800 text-white flex flex-col lg:flex-row">
       {/* Sidebar */}
-      <TeamSidebar tasks={currentTasks} statusConfig={statusConfig} />
+      <TeamSidebar statusConfig={statusConfig} />
 
       {/* Main Content - Kanban Board */}
       <div className="flex-1 p-4 lg:p-6 w-full pt-16 lg:pt-6">
@@ -110,7 +82,6 @@ const TeamPage: React.FC = () => {
               key={status}
               status={status as TaskStatus}
               config={config}
-              tasks={getTasksByStatus(currentTasks, status as TaskStatus)}
               onDrop={handleDrop}
               onDragOver={handleDragOver}
               teamId={teamId as string}

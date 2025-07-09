@@ -21,16 +21,23 @@ import { TaskCategoriesSection } from "../task-categories";
 import { TeamActionButtons } from "./TeamActionButtons";
 import { CreateTaskModal } from "./CreateTaskModal";
 import { Button } from "@/components/ui/button";
+import { useGetTasks } from "@/hooks/server/tasks/useGetTasks";
+import { useSelectedTaskCategoryStore } from "@/store/selectedTaskCategoryStore";
 
 interface Props {
-  tasks: Task[];
   statusConfig: Record<TaskStatus, StatusConfig>;
 }
 
-const TeamSidebar = ({ tasks, statusConfig }: Props) => {
+const TeamSidebar = ({ statusConfig }: Props) => {
   const { teamId } = useParams<{ teamId: string }>();
   const { data: team } = useGetTeamById(teamId as string);
   const { data: taskCategories } = useGetTaskCategories(teamId as string);
+  const { selectedTaskCategoryId, setSelectedTaskCategoryId } =
+    useSelectedTaskCategoryStore();
+  const { data: tasks = [], isPending: isTasksPending } = useGetTasks(
+    teamId as string,
+    selectedTaskCategoryId
+  );
   const [showMembers, setShowMembers] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -98,6 +105,8 @@ const TeamSidebar = ({ tasks, statusConfig }: Props) => {
           <TaskCategoriesSection
             taskCategories={taskCategories}
             teamId={teamId as string}
+            selectedTaskCategoryId={selectedTaskCategoryId}
+            onSelectCategory={setSelectedTaskCategoryId}
           />
 
           {/* Team Members */}

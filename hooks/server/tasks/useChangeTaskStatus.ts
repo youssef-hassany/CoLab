@@ -1,5 +1,6 @@
 import { baseUrl } from "@/constants/baseUrl";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Task } from "@/types/Task";
 
 const changeStatus = async (taskId: string, teamId: string, status: string) => {
   const response = await fetch(
@@ -35,7 +36,34 @@ export const useChangeTaskStatus = () => {
       teamId: string;
       status: string;
     }) => changeStatus(taskId, teamId, status),
-    onSuccess: (_, variables) => {
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({
+        queryKey: ["tasks", variables.teamId],
+      });
+      const previousTasks = queryClient.getQueryData<Task[]>([
+        "tasks",
+        variables.teamId,
+      ]);
+      queryClient.setQueryData<Task[]>(["tasks", variables.teamId], (old) =>
+        old
+          ? old.map((task) =>
+              task.id === variables.taskId
+                ? { ...task, status: variables.status as Task["status"] }
+                : task
+            )
+          : []
+      );
+      return { previousTasks };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousTasks) {
+        queryClient.setQueryData(
+          ["tasks", variables.teamId],
+          context.previousTasks
+        );
+      }
+    },
+    onSettled: (_, __, variables) => {
       queryClient.invalidateQueries({ queryKey: ["tasks", variables.teamId] });
     },
   });

@@ -3,11 +3,12 @@ import { Plus } from "lucide-react";
 import React, { useState } from "react";
 import TaskCard from "./TaskCard";
 import { CreateTaskModal } from "./CreateTaskModal";
+import { getTasksByStatus } from "@/utils/getTasksByStatus";
+import { useGetTasks } from "@/hooks/server/tasks/useGetTasks";
 
 interface KanbanColumnProps {
   status: TaskStatus;
   config: StatusConfig;
-  tasks: Task[];
   onDrop: (e: React.DragEvent<HTMLDivElement>, newStatus: TaskStatus) => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
   teamId: string;
@@ -16,12 +17,16 @@ interface KanbanColumnProps {
 const KanbanColumn: React.FC<KanbanColumnProps> = ({
   status,
   config,
-  tasks,
   onDrop,
   onDragOver,
   teamId,
 }) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const { data: tasksData = [], isPending: isTasksPending } = useGetTasks(
+    teamId as string
+  );
+
+  const tasks = getTasksByStatus(tasksData, status);
 
   return (
     <>

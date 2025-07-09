@@ -23,3 +23,9 @@ interface TasksByStatus {
   IN_REVIEW: Task[];
   DONE: Task[];
 }
+
+export interface TaskCategory {
+  id: string;
+  categoryName: string;
+  categoryColor: string;
+}
