@@ -269,7 +269,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
               </SelectTrigger>
               <SelectContent className="bg-zinc-800 border-zinc-600">
                 {team?.teamMembers.map((member) => (
-                  <SelectItem key={member.id} value={member.id}>
+                  <SelectItem key={member.relationId} value={member.relationId}>
                     {member.username}
                   </SelectItem>
                 ))}
