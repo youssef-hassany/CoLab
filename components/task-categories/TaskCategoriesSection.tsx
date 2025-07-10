@@ -7,16 +7,23 @@ import { TaskCategory } from "@/types/Task";
 import { CreateCategoryModal } from "./CreateCategoryModal";
 import { EditCategoryModal } from "./EditCategoryModal";
 import { DeleteCategoryModal } from "./DeleteCategoryModal";
+import { useGetTeamById } from "@/hooks/server/teams/useGetTeamById";
+import { useSelectedTaskCategoryStore } from "@/store/selectedTaskCategoryStore";
 
 interface TaskCategoriesSectionProps {
   taskCategories: TaskCategory[] | undefined;
   teamId: string;
+  selectedTaskCategoryId: string | undefined;
 }
 
 export function TaskCategoriesSection({
   taskCategories,
   teamId,
+  selectedTaskCategoryId,
 }: TaskCategoriesSectionProps) {
+  const { data: team } = useGetTeamById(teamId);
+  const { setSelectedTaskCategoryId } = useSelectedTaskCategoryStore();
+
   const [showCategories, setShowCategories] = useState(true);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -46,6 +53,14 @@ export function TaskCategoriesSection({
     setShowDeleteModal(true);
   };
 
+  const handleCategoryClick = (categoryId: string) => {
+    if (selectedTaskCategoryId === categoryId) {
+      setSelectedTaskCategoryId(undefined);
+      return;
+    }
+    setSelectedTaskCategoryId(categoryId);
+  };
+
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between mb-3">
@@ -68,7 +83,12 @@ export function TaskCategoriesSection({
           {taskCategories?.map((category) => (
             <div
               key={category.id}
-              className="flex items-center gap-3 p-2 rounded-lg bg-zinc-800 group"
+              className={`flex items-center gap-3 p-2 rounded-lg bg-zinc-800 group cursor-pointer ${
+                selectedTaskCategoryId === category.id
+                  ? `border-2 border-${team?.theme}-500`
+                  : ""
+              }`}
+              onClick={() => handleCategoryClick(category.id)}
             >
               <div
                 className="w-4 h-4 rounded-full"

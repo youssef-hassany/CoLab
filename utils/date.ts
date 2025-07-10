@@ -1,6 +1,5 @@
 /**
- * Comprehensive date utility functions for handling ISO date strings
- * Format: 2025-06-27T21:27:21.270Z
+ * Comprehensive date utility functions for handling dates throughout the application
  */
 
 export interface DateProperties {
@@ -142,6 +141,232 @@ export function parseDateString(dateString: string): DateProperties {
 }
 
 /**
+ * Get relative time string (e.g., "2 hours ago", "in 3 days")
+ */
+export function getRelativeTime(date: Date | string): string {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const now = new Date();
+  const diffInMs = now.getTime() - dateObj.getTime();
+  const diffInSeconds = Math.floor(diffInMs / 1000);
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  const diffInDays = Math.floor(diffInHours / 24);
+
+  if (diffInDays > 0) {
+    if (diffInDays === 1) return "Yesterday";
+    if (diffInDays < 7) return `${diffInDays} days ago`;
+    if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`;
+    if (diffInDays < 365) return `${Math.floor(diffInDays / 30)} months ago`;
+    return `${Math.floor(diffInDays / 365)} years ago`;
+  } else if (diffInDays < 0) {
+    const absDays = Math.abs(diffInDays);
+    if (absDays === 1) return "Tomorrow";
+    if (absDays < 7) return `In ${absDays} days`;
+    if (absDays < 30) return `In ${Math.floor(absDays / 7)} weeks`;
+    if (absDays < 365) return `In ${Math.floor(absDays / 30)} months`;
+    return `In ${Math.floor(absDays / 365)} years`;
+  } else {
+    if (diffInHours > 0) {
+      if (diffInHours === 1) return "1 hour ago";
+      return `${diffInHours} hours ago`;
+    } else if (diffInMinutes > 0) {
+      if (diffInMinutes === 1) return "1 minute ago";
+      return `${diffInMinutes} minutes ago`;
+    } else {
+      return "Just now";
+    }
+  }
+}
+
+/**
+ * Format a date string or Date object to a readable format
+ * @param date - Date string or Date object
+ * @param format - Format type: 'short', 'long', 'relative', 'time', 'datetime'
+ * @returns Formatted date string
+ */
+export const formatDate = (
+  date: string | Date | undefined | null,
+  format: "short" | "long" | "relative" | "time" | "datetime" = "short"
+): string => {
+  if (!date) return "No date set";
+
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+
+  if (isNaN(dateObj.getTime())) return "Invalid date";
+
+  const now = new Date();
+  const diffInMs = now.getTime() - dateObj.getTime();
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+  switch (format) {
+    case "short":
+      return dateObj.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+
+    case "long":
+      return dateObj.toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+
+    case "relative":
+      if (diffInDays === 0) return "Today";
+      if (diffInDays === 1) return "Yesterday";
+      if (diffInDays === -1) return "Tomorrow";
+      if (diffInDays > 0 && diffInDays < 7) return `${diffInDays} days ago`;
+      if (diffInDays < 0 && diffInDays > -7)
+        return `In ${Math.abs(diffInDays)} days`;
+      return dateObj.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+
+    case "time":
+      return dateObj.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+    case "datetime":
+      return dateObj.toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+    default:
+      return dateObj.toLocaleDateString();
+  }
+};
+
+/**
+ * Check if a date is in the past
+ * @param date - Date string or Date object
+ * @returns boolean
+ */
+export const isDatePast = (date: string | Date | undefined | null): boolean => {
+  if (!date) return false;
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  return dateObj < new Date();
+};
+
+/**
+ * Check if a date is today
+ * @param date - Date string or Date object
+ * @returns boolean
+ */
+export const isDateToday = (
+  date: string | Date | undefined | null
+): boolean => {
+  if (!date) return false;
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const today = new Date();
+  return dateObj.toDateString() === today.toDateString();
+};
+
+/**
+ * Check if a date is tomorrow
+ * @param date - Date string or Date object
+ * @returns boolean
+ */
+export const isDateTomorrow = (
+  date: string | Date | undefined | null
+): boolean => {
+  if (!date) return false;
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return dateObj.toDateString() === tomorrow.toDateString();
+};
+
+/**
+ * Get the number of days until a date
+ * @param date - Date string or Date object
+ * @returns number of days (negative if past)
+ */
+export const getDaysUntil = (
+  date: string | Date | undefined | null
+): number => {
+  if (!date) return 0;
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const now = new Date();
+  const diffInMs = dateObj.getTime() - now.getTime();
+  return Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+};
+
+/**
+ * Format a deadline with urgency indicators
+ * @param deadline - Deadline date string or Date object
+ * @returns Formatted deadline string with urgency context
+ */
+export const formatDeadline = (
+  deadline: string | Date | undefined | null
+): string => {
+  if (!deadline) return "No deadline set";
+
+  const dateObj = typeof deadline === "string" ? new Date(deadline) : deadline;
+  const daysUntil = getDaysUntil(deadline);
+
+  if (isDatePast(deadline)) {
+    return `${formatDate(deadline, "short")} (Overdue)`;
+  }
+
+  if (isDateToday(deadline)) {
+    return `${formatDate(deadline, "short")} (Due today)`;
+  }
+
+  if (isDateTomorrow(deadline)) {
+    return `${formatDate(deadline, "short")} (Due tomorrow)`;
+  }
+
+  if (daysUntil <= 7) {
+    return `${formatDate(deadline, "short")} (Due in ${daysUntil} days)`;
+  }
+
+  return formatDate(deadline, "short");
+};
+
+/**
+ * Get CSS classes for deadline urgency styling
+ * @param deadline - Deadline date string or Date object
+ * @returns Object with CSS classes for different urgency levels
+ */
+export const getDeadlineClasses = (
+  deadline: string | Date | undefined | null
+) => {
+  if (!deadline) return { text: "text-zinc-400", bg: "bg-zinc-800/50" };
+
+  const dateObj = typeof deadline === "string" ? new Date(deadline) : deadline;
+  const daysUntil = getDaysUntil(deadline);
+
+  if (isDatePast(dateObj)) {
+    return { text: "text-red-400", bg: "bg-red-900/20" };
+  }
+
+  if (isDateToday(dateObj)) {
+    return { text: "text-orange-400", bg: "bg-orange-900/20" };
+  }
+
+  if (isDateTomorrow(dateObj)) {
+    return { text: "text-yellow-400", bg: "bg-yellow-900/20" };
+  }
+
+  if (daysUntil <= 7) {
+    return { text: "text-blue-400", bg: "bg-blue-900/20" };
+  }
+
+  return { text: "text-green-400", bg: "bg-green-900/20" };
+};
+
+/**
  * Get just the date part (YYYY-MM-DD)
  */
 export function getDateOnly(dateString: string): string {
@@ -201,63 +426,11 @@ export function isTomorrow(dateString: string): boolean {
 }
 
 /**
- * Get relative time description (e.g., "2 hours ago", "in 3 days")
- */
-export function getRelativeTime(date: Date | string): string {
-  const targetDate = typeof date === "string" ? new Date(date) : date;
-  const now = new Date();
-  const diffMs = targetDate.getTime() - now.getTime();
-  const diffSeconds = Math.floor(Math.abs(diffMs) / 1000);
-  const diffMinutes = Math.floor(diffSeconds / 60);
-  const diffHours = Math.floor(diffMinutes / 60);
-  const diffDays = Math.floor(diffHours / 24);
-  const diffWeeks = Math.floor(diffDays / 7);
-  const diffMonths = Math.floor(diffDays / 30);
-  const diffYears = Math.floor(diffDays / 365);
-
-  const isPast = diffMs < 0;
-  const prefix = isPast ? "" : "in ";
-  const suffix = isPast ? " ago" : "";
-
-  if (diffSeconds < 60) {
-    return isPast ? "just now" : "in a moment";
-  } else if (diffMinutes < 60) {
-    const unit = diffMinutes === 1 ? "minute" : "minutes";
-    return `${prefix}${diffMinutes} ${unit}${suffix}`;
-  } else if (diffHours < 24) {
-    const unit = diffHours === 1 ? "hour" : "hours";
-    return `${prefix}${diffHours} ${unit}${suffix}`;
-  } else if (diffDays < 7) {
-    const unit = diffDays === 1 ? "day" : "days";
-    return `${prefix}${diffDays} ${unit}${suffix}`;
-  } else if (diffWeeks < 4) {
-    const unit = diffWeeks === 1 ? "week" : "weeks";
-    return `${prefix}${diffWeeks} ${unit}${suffix}`;
-  } else if (diffMonths < 12) {
-    const unit = diffMonths === 1 ? "month" : "months";
-    return `${prefix}${diffMonths} ${unit}${suffix}`;
-  } else {
-    const unit = diffYears === 1 ? "year" : "years";
-    return `${prefix}${diffYears} ${unit}${suffix}`;
-  }
-}
-
-/**
- * Format date for display in different styles
- */
-export function formatDate(
-  dateString: string,
-  style: "short" | "medium" | "long" | "full" = "medium"
-): string {
-  const parsed = parseDateString(dateString);
-  return parsed.formatted[style];
-}
-
-/**
- * Get day of week (0 = Sunday, 6 = Saturday)
+ * Get day of week (0-6, where 0 is Sunday)
  */
 export function getDayOfWeek(dateString: string): number {
-  return new Date(dateString).getDay();
+  const date = new Date(dateString);
+  return date.getDay();
 }
 
 /**
@@ -265,59 +438,34 @@ export function getDayOfWeek(dateString: string): number {
  */
 export function getWeekNumber(dateString: string): number {
   const date = new Date(dateString);
-  const firstDay = new Date(date.getFullYear(), 0, 1);
-  const pastDaysOfYear = (date.getTime() - firstDay.getTime()) / 86400000;
-  return Math.ceil((pastDaysOfYear + firstDay.getDay() + 1) / 7);
+  const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+  const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
+  return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
 }
 
 /**
- * Check if it's a weekend
+ * Check if the date falls on a weekend
  */
 export function isWeekend(dateString: string): boolean {
   const dayOfWeek = getDayOfWeek(dateString);
-  return dayOfWeek === 0 || dayOfWeek === 6; // Sunday or Saturday
+  return dayOfWeek === 0 || dayOfWeek === 6;
 }
 
 /**
  * Get timezone offset in minutes
  */
 export function getTimezoneOffset(dateString: string): number {
-  return new Date(dateString).getTimezoneOffset();
+  const date = new Date(dateString);
+  return date.getTimezoneOffset();
 }
 
 /**
- * Convert to different timezone (returns new ISO string)
+ * Convert date to a specific timezone
  */
 export function convertToTimezone(
   dateString: string,
   timezone: string
 ): string {
   const date = new Date(dateString);
-  return (
-    new Intl.DateTimeFormat("en-CA", {
-      timeZone: timezone,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    })
-      .format(date)
-      .replace(/[^\d]/g, (match) => (match === " " ? "T" : match)) + ".000Z"
-  );
+  return date.toLocaleString("en-US", { timeZone: timezone });
 }
-
-// Example usage:
-/*
-const dateStr = "2025-06-27T21:27:21.270Z";
-const parsed = parseDateString(dateStr);
-
-console.log(parsed.dateOnly);        // "2025-06-27"
-console.log(parsed.time12Hour);      // "9:27 PM"
-console.log(parsed.formatted.long);  // "June 27, 2025"
-console.log(parsed.dayName);         // "Friday"
-console.log(isToday(dateStr));       // false
-console.log(getRelativeTime(dateStr)); // "in 2 days" (example)
-*/

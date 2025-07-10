@@ -11,6 +11,7 @@ import TeamPageSkeleton from "@/components/teams/TeamPageSkeleton";
 import { getTasksByStatus } from "@/utils/getTasksByStatus";
 import TeamSidebar from "@/components/teams/TeamSidebar";
 import { toast } from "sonner";
+import TaskDetailsDrawer from "@/components/task/TaskDetailsDrawer";
 
 const statusConfig: Record<TaskStatus, StatusConfig> = {
   ISSUED: { title: "Issued", color: "bg-red-500", count: 0 },
@@ -89,6 +90,8 @@ const TeamPage: React.FC = () => {
           ))}
         </div>
       </div>
+
+      <TaskDetailsDrawer teamId={teamId as string} />
     </main>
   );
 };

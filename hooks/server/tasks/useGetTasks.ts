@@ -37,6 +37,9 @@ const getTasks = async (teamId: string, taskCategoryId?: string) => {
             assignee: task.assignedBy?.user || "Unassigned",
             priority: task.taskPriority,
             status: task.taskStatus,
+            deadline: task.taskDeadline,
+            assignedToId: task.assignedToId,
+            categoryId: task.taskCategoryId,
           });
         });
       }

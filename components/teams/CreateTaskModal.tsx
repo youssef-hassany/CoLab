@@ -19,11 +19,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { DatePicker } from "@/components/ui/date-picker";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { Upload, X } from "lucide-react";
 import { useGetTeamById } from "@/hooks/server/teams/useGetTeamById";
 import { useGetTaskCategories } from "@/hooks/server/task-categories/useGetTaskCategories";
+import React from "react";
 
 interface CreateTaskModalProps {
   isOpen: boolean;
@@ -46,13 +48,29 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   const [formData, setFormData] = useState({
     taskName: "",
     taskDescription: "",
-    taskDeadline: "",
+    taskDeadline: undefined as Date | undefined,
     taskPriority: "MEDIUM" as TaskPriority,
     taskStatus: defaultStatus,
-    taskCategory: taskCategories?.[0]?.id || "",
+    taskCategory: "",
     assignToUser: "",
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  // Set default values when data is loaded
+  React.useEffect(() => {
+    if (taskCategories && taskCategories.length > 0 && !formData.taskCategory) {
+      setFormData((prev) => ({ ...prev, taskCategory: taskCategories[0].id }));
+    }
+  }, [taskCategories, formData.taskCategory]);
+
+  React.useEffect(() => {
+    if (team && team.teamMembers.length > 0 && !formData.assignToUser) {
+      setFormData((prev) => ({
+        ...prev,
+        assignToUser: team.teamMembers[0].relationId,
+      }));
+    }
+  }, [team, formData.assignToUser]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,7 +90,10 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
       formDataToSend.append("teamId", teamId);
       formDataToSend.append("taskName", formData.taskName);
       formDataToSend.append("taskDescription", formData.taskDescription);
-      formDataToSend.append("taskDeadline", formData.taskDeadline);
+      formDataToSend.append(
+        "taskDeadline",
+        formData.taskDeadline?.toISOString() || ""
+      );
       formDataToSend.append("taskStatus", formData.taskStatus);
       formDataToSend.append("taskPriority", formData.taskPriority);
       formDataToSend.append("taskCategory", formData.taskCategory);
@@ -89,7 +110,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
         teamId,
         taskName: formData.taskName,
         taskDescription: formData.taskDescription,
-        taskDeadline: formData.taskDeadline,
+        taskDeadline: formData.taskDeadline?.toISOString() || "",
         taskStatus: formData.taskStatus,
         taskPriority: formData.taskPriority,
         taskCategoryId: formData.taskCategory,
@@ -107,11 +128,11 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
       setFormData({
         taskName: "",
         taskDescription: "",
-        taskDeadline: "",
+        taskDeadline: undefined,
         taskPriority: "MEDIUM",
         taskStatus: defaultStatus,
         taskCategory: taskCategories?.[0]?.id || "",
-        assignToUser: "",
+        assignToUser: team?.teamMembers?.[0]?.relationId || "",
       });
       setSelectedFile(null);
     } catch (error) {
@@ -175,14 +196,12 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             <Label htmlFor="taskDeadline" className="text-zinc-300">
               Deadline *
             </Label>
-            <Input
-              id="taskDeadline"
-              type="datetime-local"
-              value={formData.taskDeadline}
-              onChange={(e) =>
-                setFormData({ ...formData, taskDeadline: e.target.value })
+            <DatePicker
+              date={formData.taskDeadline}
+              onDateChange={(date) =>
+                setFormData({ ...formData, taskDeadline: date })
               }
-              className="bg-zinc-800 border-zinc-600 text-white"
+              placeholder="Select deadline"
             />
           </div>
 
@@ -198,7 +217,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                 }
               >
                 <SelectTrigger className="bg-zinc-800 border-zinc-600 text-white">
-                  <SelectValue />
+                  <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-800 border-zinc-600">
                   {taskCategories?.map((category) => (
@@ -265,7 +284,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
               }
             >
               <SelectTrigger className="bg-zinc-800 border-zinc-600 text-white">
-                Assign To
+                <SelectValue placeholder="Select a team member" />
               </SelectTrigger>
               <SelectContent className="bg-zinc-800 border-zinc-600">
                 {team?.teamMembers.map((member) => (
@@ -337,7 +356,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             <Button
               type="submit"
               disabled={createTaskMutation.isPending}
-              className={`flex-1 bg-${team?.theme}-600 hover:bg-${team?.theme}-700 text-white`}
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
             >
               {createTaskMutation.isPending ? "Creating..." : "Create Task"}
             </Button>

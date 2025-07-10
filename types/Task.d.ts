@@ -9,6 +9,9 @@ export interface Task {
   assignee: string;
   priority: TaskPriority;
   status: TaskStatus;
+  assignedToId?: string;
+  categoryId?: string;
+  deadline?: string;
 }
 
 export interface StatusConfig {
