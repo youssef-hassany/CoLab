@@ -2,7 +2,7 @@
 
 import { useGetTeamById } from "@/hooks/server/teams/useGetTeamById";
 import { useGetTaskCategories } from "@/hooks/server/task-categories/useGetTaskCategories";
-import { StatusConfig, Task, TaskStatus } from "@/types/Task";
+import { StatusConfig, TaskStatus } from "@/types/Task";
 import { getTasksByStatus } from "@/utils/getTasksByStatus";
 import {
   Calendar,
@@ -32,9 +32,8 @@ const TeamSidebar = ({ statusConfig }: Props) => {
   const { teamId } = useParams<{ teamId: string }>();
   const { data: team } = useGetTeamById(teamId as string);
   const { data: taskCategories } = useGetTaskCategories(teamId as string);
-  const { selectedTaskCategoryId, setSelectedTaskCategoryId } =
-    useSelectedTaskCategoryStore();
-  const { data: tasks = [], isPending: isTasksPending } = useGetTasks(
+  const { selectedTaskCategoryId } = useSelectedTaskCategoryStore();
+  const { data: tasks = [] } = useGetTasks(
     teamId as string,
     selectedTaskCategoryId
   );
@@ -106,7 +105,6 @@ const TeamSidebar = ({ statusConfig }: Props) => {
             taskCategories={taskCategories}
             teamId={teamId as string}
             selectedTaskCategoryId={selectedTaskCategoryId}
-            onSelectCategory={setSelectedTaskCategoryId}
           />
 
           {/* Team Members */}
