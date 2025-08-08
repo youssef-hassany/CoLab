@@ -9,7 +9,7 @@ import ReactCrop, {
 } from "react-image-crop";
 import setCanvasPreview from "@/lib/setCanvasPreview";
 import { Button } from "@/components/ui/button";
-import { X, Check, Divide, Upload } from "lucide-react";
+import { X, Check, Upload } from "lucide-react";
 
 const DEFAULT_ASPECT_RATIO = 1;
 const DEFAULT_MIN_DIMENSION = 150;
@@ -89,7 +89,6 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
   imgState,
   submitFunction,
   imgStyle = "",
-  defaultImgSrc = "/Group 29.png",
   aspectRatio = DEFAULT_ASPECT_RATIO,
   minDimension = DEFAULT_MIN_DIMENSION,
   initialImgSrc = "",

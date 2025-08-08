@@ -54,8 +54,8 @@ export function DeleteCategoryModal({
         <DialogHeader>
           <DialogTitle>Delete Task Category</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete "{category?.categoryName}"? This
-            action cannot be undone.
+            Are you sure you want to delete &quot;{category?.categoryName}
+            &quot;? This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

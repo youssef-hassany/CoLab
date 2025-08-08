@@ -34,8 +34,8 @@ const UserTeamsList = () => {
             No teams yet
           </h3>
           <p className="text-zinc-400 text-center max-w-md mb-6">
-            You haven't joined any teams yet. Create your first team or ask to
-            be invited to get started with collaborative work.
+            You haven&apos;t joined any teams yet. Create your first team or ask
+            to be invited to get started with collaborative work.
           </p>
           <div className="flex gap-3">
             <Button onClick={toggleCreateModal}>Create Team</Button>

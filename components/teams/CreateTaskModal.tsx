@@ -34,6 +34,19 @@ interface CreateTaskModalProps {
   defaultStatus?: TaskStatus;
 }
 
+// Add this interface for type safety
+interface CreateTaskData {
+  teamId: string;
+  taskName: string;
+  taskDescription: string;
+  taskDeadline: string;
+  taskStatus: TaskStatus;
+  taskPriority: TaskPriority;
+  taskCategoryId: string;
+  assignedToId: string;
+  attachedFile?: File;
+}
+
 export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   isOpen,
   onClose,
@@ -106,7 +119,8 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
         formDataToSend.append("attachedFile", selectedFile);
       }
 
-      const taskData: any = {
+      // Fixed: Replaced 'any' with proper type
+      const taskData: CreateTaskData = {
         teamId,
         taskName: formData.taskName,
         taskDescription: formData.taskDescription,
@@ -135,7 +149,8 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
         assignToUser: team?.teamMembers?.[0]?.relationId || "",
       });
       setSelectedFile(null);
-    } catch (error) {
+    } catch {
+      // Fixed: Removed unused 'error' parameter
       toast.error("Failed to create task. Please try again.");
     }
   };

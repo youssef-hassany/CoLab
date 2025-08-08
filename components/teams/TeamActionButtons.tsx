@@ -47,6 +47,7 @@ export function TeamActionButtons({
         setTimeout(() => setCopied(false), 2000);
       } catch (err) {
         toast.error("Failed to copy join code");
+        console.error(err);
       }
     }
   };
@@ -115,8 +116,8 @@ export function TeamActionButtons({
           <DialogHeader>
             <DialogTitle>Leave Team</DialogTitle>
             <DialogDescription>
-              Are you sure you want to leave "{teamName}"? You will lose access
-              to all team data and tasks.
+              Are you sure you want to leave &quot;{teamName}&quot;? You will
+              lose access to all team data and tasks.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -154,9 +155,9 @@ export function TeamActionButtons({
             <DialogHeader>
               <DialogTitle>Delete Team</DialogTitle>
               <DialogDescription>
-                Are you sure you want to delete "{teamName}"? This action cannot
-                be undone and will permanently remove the team and all its data
-                for all members.
+                Are you sure you want to delete &quot;{teamName}&quot;? This
+                action cannot be undone and will permanently remove the team and
+                all its data for all members.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>

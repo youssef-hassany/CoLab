@@ -1,7 +1,7 @@
 import { AuthFormsContainer } from "@/components/auth/AuthFormContainer";
 import GithubAuthButton from "@/components/auth/GithubAuthButton";
 import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
-import { CheckCircle, Chrome, Github } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 
 export default function Home() {
   return (
@@ -67,7 +67,7 @@ export default function Home() {
               </li>
             </ul>
             <div className="text-lg font-medium">
-              Your team's next breakthrough starts here
+              Your team&apos;s next breakthrough starts here
               <div className="mt-2 text-emerald-300">
                 Start Collaborating Today
               </div>

@@ -25,11 +25,7 @@ export function JoinTeamDialog({ open, onOpenChange }: JoinTeamDialogProps) {
   const [code, setCode] = useState("");
   const router = useRouter();
 
-  const {
-    mutateAsync: joinTeam,
-    isPending: isLoading,
-    isSuccess,
-  } = useJoinTeam();
+  const { mutateAsync: joinTeam, isPending: isLoading } = useJoinTeam();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -4,9 +4,9 @@ import React from "react";
 import { useFormStatus } from "react-dom";
 import Spinner from "./Spinner";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
+// interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
 
-const SubmitButton = (props: ButtonProps) => {
+const SubmitButton = (props: React.ButtonHTMLAttributes<HTMLButtonElement>) => {
   const { pending } = useFormStatus();
 
   return (

@@ -28,6 +28,19 @@ interface EditTaskFormProps {
   onSuccess: () => void;
 }
 
+interface UpdateTaskData {
+  teamId: string;
+  taskId: string;
+  taskName: string;
+  taskDescription: string;
+  taskStatus: string;
+  taskPriority: string;
+  taskDeadline?: string;
+  taskCategoryId?: string;
+  assignedToId?: string;
+  attachedFile?: File;
+}
+
 export const EditTaskForm: React.FC<EditTaskFormProps> = ({
   task,
   teamId,
@@ -76,7 +89,7 @@ export const EditTaskForm: React.FC<EditTaskFormProps> = ({
     }
 
     try {
-      const updateData: any = {
+      const updateData: UpdateTaskData = {
         teamId,
         taskId: task.id,
         taskName: formData.taskName,
@@ -103,6 +116,7 @@ export const EditTaskForm: React.FC<EditTaskFormProps> = ({
       onSuccess();
     } catch (error) {
       toast.error("Failed to update task. Please try again.");
+      console.error(error);
     }
   };
 

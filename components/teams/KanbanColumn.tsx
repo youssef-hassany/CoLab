@@ -22,9 +22,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
   teamId,
 }) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const { data: tasksData = [], isPending: isTasksPending } = useGetTasks(
-    teamId as string
-  );
+  const { data: tasksData = [] } = useGetTasks(teamId as string);
 
   const tasks = getTasksByStatus(tasksData, status);
 

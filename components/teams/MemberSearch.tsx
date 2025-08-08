@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { X, Search, UserPlus } from "lucide-react";
+import { X, Search } from "lucide-react";
 import { useGetUsersByUsername } from "@/hooks/server/user/useGetUsersByUsername";
 import { useDebounce } from "@/hooks/use-debounce";
 

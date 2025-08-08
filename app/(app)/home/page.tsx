@@ -31,7 +31,8 @@ export default function Home() {
                 Hello, {data?.username || "User"}! 👋
               </h1>
               <p className="text-zinc-400 mt-2">
-                Welcome back to CoLab. Here's what's happening with your teams.
+                Welcome back to CoLab. Here&apos;s what&apos;s happening with
+                your teams.
               </p>
             </div>
             <div className="flex items-center gap-4">

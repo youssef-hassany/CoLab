@@ -1,14 +1,12 @@
 "use client";
 
 import { useGetTeamById } from "@/hooks/server/teams/useGetTeamById";
-import { useGetTasks } from "@/hooks/server/tasks/useGetTasks";
 import { useChangeTaskStatus } from "@/hooks/server/tasks/useChangeTaskStatus";
 import { useParams } from "next/navigation";
-import React, { useState } from "react";
+import React from "react";
 import { StatusConfig, Task, TaskStatus } from "@/types/Task";
 import KanbanColumn from "@/components/teams/KanbanColumn";
 import TeamPageSkeleton from "@/components/teams/TeamPageSkeleton";
-import { getTasksByStatus } from "@/utils/getTasksByStatus";
 import TeamSidebar from "@/components/teams/TeamSidebar";
 import { toast } from "sonner";
 import TaskDetailsDrawer from "@/components/task/TaskDetailsDrawer";
@@ -25,6 +23,7 @@ const TeamPage: React.FC = () => {
   const { data: team, isPending: isTeamPending } = useGetTeamById(
     teamId as string
   );
+  console.log(team?.id);
 
   const changeStatusMutation = useChangeTaskStatus();
 
@@ -54,6 +53,7 @@ const TeamPage: React.FC = () => {
     } catch (error) {
       // Show error toast if mutation fails
       toast.error("Failed to update task status. Please try again.");
+      console.error(error);
     }
   };
 
