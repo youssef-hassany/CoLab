@@ -1,0 +1,39 @@
+FROM node:18-alpine AS base 
+
+FROM base AS deps 
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+
+RUN npm ci 
+
+
+FROM base AS build
+
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
+
+COPY . .
+
+ENV NEXT_TELMETRY_DISABLED=1
+
+RUN npm run build:docker
+
+FROM base AS runner
+
+WORKDIR /app
+
+ENV NEXT_TELMETRY_DISABLED=1
+
+COPY --from=build /app/public ./public
+
+RUN mkdir .next
+
+
+COPY --from=build /app/.next/standalone ./
+COPY --from=build /app/.next/static ./.next/static
+
+
+CMD [ "node","server.js" ]

@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build:docker": "SKIP_TYPE_CHECK=true next build"
   },
   "dependencies": {
     "@floating-ui/react": "^0.26.28",
