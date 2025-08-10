@@ -9,7 +9,7 @@ const joinTeam = async (teamId: string) => {
       credentials: "include",
     });
     const data = await response.json();
-    return data.data.team.id;
+    return data.data.relation.teamId;
   } catch (error) {
     console.error(error);
   }
