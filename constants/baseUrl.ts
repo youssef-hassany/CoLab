@@ -1,4 +1,4 @@
 export const baseUrl =
   process.env.NODE_ENV === "production"
-    ? "http://localhost:8000"
+    ? "https://colab.egy.wtf"
     : "http://localhost:8000";
