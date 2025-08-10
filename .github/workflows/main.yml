@@ -1,0 +1,24 @@
+name: deploy the project
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout node
+        uses: actions/checkout@v2
+      - name: log to docker
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - run: docker build -f dockerfile.prod -t nightstalker5699/frontend .
+
+      - run: docker push nightstalker5699/frontend
