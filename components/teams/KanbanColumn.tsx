@@ -5,6 +5,7 @@ import TaskCard from "./TaskCard";
 import { CreateTaskModal } from "./CreateTaskModal";
 import { getTasksByStatus } from "@/utils/getTasksByStatus";
 import { useGetTasks } from "@/hooks/server/tasks/useGetTasks";
+import { useSelectedTaskCategoryStore } from "@/store/selectedTaskCategoryStore";
 
 interface KanbanColumnProps {
   status: TaskStatus;
@@ -21,14 +22,18 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
   onDragOver,
   teamId,
 }) => {
+  const { selectedTaskCategoryId } = useSelectedTaskCategoryStore();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const { data: tasksData = [] } = useGetTasks(teamId as string);
+  const { data: tasksData = [] } = useGetTasks(
+    teamId as string,
+    selectedTaskCategoryId
+  );
 
   const tasks = getTasksByStatus(tasksData, status);
 
   return (
     <>
-      <div className="flex-1 bg-zinc-900 rounded-lg p-3 lg:p-4">
+      <div className="flex-1 bg-zinc-900 rounded-lg p-3 lg:p-4 lg:max-w-60">
         <div className="flex items-center justify-between mb-3 lg:mb-4">
           <div className="flex items-center gap-2">
             <div className={`w-3 h-3 rounded-full ${config.color}`}></div>

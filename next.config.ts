@@ -16,6 +16,19 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
+      // R2 domain with both HTTP and HTTPS support
+      {
+        protocol: "http",
+        hostname: "pub-ff2ca37b533641ffa6a9cffe678a70d6.r2.dev",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "pub-ff2ca37b533641ffa6a9cffe678a70d6.r2.dev",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
   // ADD THIS WEBPACK CONFIGURATION BELOW

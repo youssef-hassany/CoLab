@@ -36,7 +36,11 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onDragStart }) => {
         <h4 className="font-medium text-white text-sm">{task.title}</h4>
         <GripVertical className="w-4 h-4 text-zinc-400" />
       </div>
-      <p className="text-zinc-300 text-xs mb-3">{task.description}</p>
+      <p className="text-zinc-300 text-xs mb-3">
+        {task.description.length > 100
+          ? `${task.description.slice(0, 100)}...`
+          : task.description}
+      </p>
 
       {/* Deadline */}
       {task.deadline && (

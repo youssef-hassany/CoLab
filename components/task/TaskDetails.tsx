@@ -6,6 +6,7 @@ import { Separator } from "../ui/separator";
 import { Calendar, User, Flag, FileText, Clock } from "lucide-react";
 import { TaskPriority, TaskStatus, Task } from "@/types/Task";
 import { formatDeadline, getDeadlineClasses } from "@/utils/date";
+import TextFormatter from "../ui/TextFormatter";
 
 interface TaskDetailsProps {
   task: Task;
@@ -87,12 +88,25 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ task }) => {
           <FileText className="w-4 h-4" />
           <span className="font-medium">Description</span>
         </div>
-        <p className="text-zinc-300 leading-relaxed bg-zinc-800/50 rounded-lg p-4 border border-zinc-700">
-          {task.description || "No description provided"}
+        <p className="text-zinc-300 leading-relaxed bg-zinc-800/50 rounded-lg p-4 border border-zinc-700 select-text">
+          <TextFormatter description={task.description} />
         </p>
       </div>
 
       <Separator className="bg-zinc-700" />
+
+      {/* Task Attachment */}
+      {task.attachedFile && (
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-zinc-300">
+            <FileText className="w-4 h-4" />
+            <span className="font-medium">Attachment</span>
+          </div>
+          <img src={task.attachedFile} alt={`${task.title} Attachment`} />
+        </div>
+      )}
+
+      {task.attachedFile && <Separator className="bg-zinc-700" />}
 
       {/* Task Details Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

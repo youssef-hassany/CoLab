@@ -40,6 +40,7 @@ const getTasks = async (teamId: string, taskCategoryId?: string) => {
             deadline: task.taskDeadline,
             assignedToId: task.assignedToId,
             categoryId: task.taskCategoryId,
+            attachedFile: task.attachedFile,
           });
         });
       }
