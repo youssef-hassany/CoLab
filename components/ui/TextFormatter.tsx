@@ -39,7 +39,7 @@ const TextFormatter: React.FC<TextFormatterProps> = ({
 
       // Process the matched URL
       let url = match[0];
-      let displayUrl = url;
+      const displayUrl = url;
 
       // Add protocol if missing
       if (
