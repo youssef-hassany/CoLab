@@ -11,6 +11,7 @@ export const useLogin = () => {
       const response = await fetch(`${baseUrl}/api/login`, {
         method: "POST",
         body: formData,
+        credentials: "include",
       });
 
       const data = await response.json();

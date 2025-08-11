@@ -12,6 +12,7 @@ export interface Task {
   assignedToId?: string;
   categoryId?: string;
   deadline?: string;
+  attachedFile?: string;
 }
 
 export interface StatusConfig {
