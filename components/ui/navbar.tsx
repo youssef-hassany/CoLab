@@ -20,7 +20,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useGetLoggedInUser } from "@/hooks/server/user/useGetLoggedInUser";
@@ -127,10 +126,8 @@ export function TopNavbar({
                   size="icon"
                   className="rounded-full text-zinc-300 hover:text-white hover:bg-zinc-800 p-0"
                 >
-                  <Image
+                  <img
                     src={user?.photo || "/placeholder-avatar.png"}
-                    width={20}
-                    height={20}
                     alt={user?.username || "User"}
                     className="rounded-full"
                   />
